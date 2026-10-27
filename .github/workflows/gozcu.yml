@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: "*/10 * * * *"
   workflow_dispatch:
+    inputs:
+      deneme:
+        description: Telegram'a deneme mesajı gönder
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -22,6 +27,7 @@ jobs:
         run: python3 gozcu.py
         env:
           NABIZ: ${{ vars.NABIZ }}
+          DENEME: ${{ inputs.deneme }}
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_SOHBET: ${{ secrets.TG_SOHBET }}
       - uses: actions/cache/save@v4

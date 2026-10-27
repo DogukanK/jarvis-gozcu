@@ -109,6 +109,8 @@ def main():
         print(f"{ad:28} {'iyi' if iyi else 'SORUN'}  {ayr}")
         yeni[ad] = d
     json.dump(yeni, open(DURUM, "w"))
+    if os.environ.get("DENEME") == "true":
+        olaylar.append(("deneme", "Jarvis gözcü (GitHub) deneme mesajı: dış izleyici Telegram'a ulaşabiliyor."))
     dustu = False
     for tur, metin in olaylar:
         print(f"{tur}: {metin}  telegram={'gitti' if telegram(metin) else 'gidemedi'}")
