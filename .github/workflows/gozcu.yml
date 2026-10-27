@@ -1,0 +1,34 @@
+name: gozcu
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gozcu
+jobs:
+  yokla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache/restore@v4
+        with:
+          path: durum.json
+          key: durum-${{ github.run_id }}
+          restore-keys: durum-
+      - id: y
+        run: python3 gozcu.py
+        env:
+          NABIZ: ${{ vars.NABIZ }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_SOHBET: ${{ secrets.TG_SOHBET }}
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: durum.json
+          key: durum-${{ github.run_id }}
+      # Yeni sorun varsa iş başarısız olur: GitHub hesabın e-postasına "Run failed" gönderir (Telegram'dan bağımsız yedek kanal)
+      - if: steps.y.outputs.yeni_olay == '1'
+        run: echo "Yeni sorun bildirildi" && exit 1
