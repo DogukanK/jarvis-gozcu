@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 
 DURUM = "durum.json"
 HTTP = {"merhaba": "https://merhaba.kurnaz.cloud/", "dokploy": "https://dokploy.kurnaz.cloud/"}
-TLS = ["merhaba.kurnaz.cloud", "dokploy.kurnaz.cloud", "hermes.kurnaz.cloud"]
+TLS = ["merhaba.kurnaz.cloud", "dokploy.kurnaz.cloud"]
 ACIKLAMA = {
     "merhaba": "VPS'teki merhaba.kurnaz.cloud cevap vermiyor (VPS, Traefik ya da Swarm)",
     "dokploy": "Dokploy paneli cevap vermiyor",
@@ -56,11 +56,12 @@ def tls_gun(alan):
 
 
 def yokla():
-    s = {ad: http(u) for ad, u in HTTP.items()}
     try:
         n = json.loads(os.environ.get("NABIZ") or "{}")
     except ValueError:
         n = {}
+    # Doğukan'ın bilerek durdurduğu uygulama (nabızla gelir) sorun sayılmaz
+    s = {ad: (True, "durduruldu (bilerek)") if ad in n.get("durdurulan", []) else http(u) for ad, u in HTTP.items()}
     simdi = time.time()
     yas = (simdi - n.get("t", 0)) / 60
     s["nabiz"] = (yas <= 40, f"{round(yas)} dk önce" if n else "nabız yok")
